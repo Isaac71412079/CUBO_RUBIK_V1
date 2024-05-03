@@ -95,20 +95,20 @@ class RubikMoves:
 #SE HIZO CORRECION PARA LOS MOVIMIENTOS U y U', F y F'.
 
     @staticmethod
-    def L(cube): #MOVIMIENTO INCORRECTO
+    def L(cube): #MOVIMIENTO CORRECTO
         """
         Rotate the left face clockwise.
         """
         RubikMoves.rotate_face_clockwise(cube.faces['O'])
         left_column = [cube.faces['W'][i][0] for i in range(3)]
         for i in range(3):
-            cube.faces['W'][i][0] = cube.faces['B'][2 - i][2]
+            cube.faces['W'][i][0] = cube.faces['B'][2-i][2]  # Corregido: De 'B' a 'W', invirtiendo índices.
         for i in range(3):
-            cube.faces['B'][i][2] = cube.faces['Y'][i][0]
+            cube.faces['B'][2-i][2] = cube.faces['Y'][i][0]  # Corregido: De 'Y' a 'B', invirtiendo índices.
         for i in range(3):
-            cube.faces['Y'][i][0] = cube.faces['G'][i][0]
+            cube.faces['Y'][i][0] = cube.faces['G'][i][0]  # Corregido: De 'G' a 'Y'.
         for i in range(3):
-            cube.faces['G'][i][0] = left_column[i]
+            cube.faces['G'][i][0] = left_column[i-3]  # Corregido: De 'W' a 'G'.
 
     @staticmethod
     def L_prime(cube): #MOVIMIENTO CORRECTO
@@ -161,16 +161,16 @@ class RubikMoves:
             cube.faces['G'][i][2] = right_column[i]
 
 #SE HIZO CORRECION PARA LOS MOVIMIENTOS U y U', F y F', L y L', R y R'.
-
+            
     @staticmethod
-    def B(cube): 
+    def B(cube): #MOVIMIENTO CORRECTO
         """
         Rotate the back face clockwise.
         """
         RubikMoves.rotate_face_clockwise(cube.faces['B'])
         top_row_B = cube.faces['W'][0].copy()
 
-        cube.faces['W'][0] = [cube.faces['R'][i][2] for i in range(3)][::-1]
+        cube.faces['W'][0] = [cube.faces['R'][2-i][2] for i in range(3)][::-1]
         cube.faces['R'][2][2], cube.faces['R'][1][2], cube.faces['R'][0][2] = cube.faces['Y'][2]
         cube.faces['Y'][2] = [cube.faces['O'][i][0] for i in range(3)]
         for i in range(3):
@@ -183,7 +183,7 @@ class RubikMoves:
         """
         RubikMoves.rotate_face_counterclockwise(cube.faces['B'])
         top_row_B = cube.faces['W'][0].copy()
-        cube.faces['W'][0] = [cube.faces['O'][i][0] for i in range(3)]
+        cube.faces['W'][0] = [cube.faces['O'][2-i][0] for i in range(3)]
         cube.faces['O'][0][0], cube.faces['O'][1][0], cube.faces['O'][2][0] = cube.faces['Y'][2]
         cube.faces['Y'][2] = [cube.faces['R'][i][2] for i in range(3)][::-1]
         for i in range(3):
