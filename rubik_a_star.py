@@ -1,62 +1,56 @@
 import heapq
-from rubik_cube import RubikCube
 from rubik_moves import RubikMoves
-
-class Node:
-    def __init__(self, cube, g=0, h=0, parent=None, move=None):
+from rubik_cube import RubikCube
+class RubikState:
+    def __init__(self, cube, moves=[]):
         self.cube = cube
-        self.g = g  # Costo desde el inicio
-        self.h = h  # Heurística al objetivo
-        self.f = g + h  # Costo total estimado
-        self.parent = parent  # Nodo padre
-        self.move = move  # Movimiento que llevó a este estado
+        self.moves = moves
+        self.cost = len(self.moves) + self.heuristic()
+
+    def heuristic(self):
+        # Heurística más compleja (opcionalmente implementable)
+        return sum(sum(1 for cell in row if cell != color) for face in self.cube.faces.values() for row in face for color in self.cube.colors)
 
     def __lt__(self, other):
-        return self.f < other.f  # Necesario para la cola de prioridad
+        return self.cost < other.cost
 
-def heuristic(cube):
-    # Esta es una heurística simplificada que cuenta el número de piezas fuera de lugar
-    goal = ['W', 'G', 'O', 'R', 'B', 'Y']
-    mismatch = 0
-    for color in goal:
-        goal_state = [[color]*3 for _ in range(3)]
-        for i in range(3):
-            for j in range(3):
-                if cube.faces[color][i][j] != goal_state[i][j]:
-                    mismatch += 1
-    return mismatch
+def generate_moves(state):
+    last_move = state.moves[-1] if state.moves else None
+    moves = ['U', 'U_prime', 'L', 'L_prime', 'F', 'F_prime', 'R', 'R_prime', 'B', 'B_prime', 'D', 'D_prime']
+    opposite = {'U': 'U_prime', 'U_prime': 'U', 'L': 'L_prime', 'L_prime': 'L', 'F': 'F_prime', 'F_prime': 'F',
+                'R': 'R_prime', 'R_prime': 'R', 'B': 'B_prime', 'B_prime': 'B', 'D': 'D_prime', 'D_prime': 'D'}
 
-def a_star_solve(cube):
-    initial_node = Node(cube.copy(), h=heuristic(cube))
-    open_set = []
-    heapq.heappush(open_set, initial_node)
+    for move in moves:
+        if last_move is None or (last_move != opposite[move]):
+            new_cube = state.cube.copy()
+            getattr(RubikMoves, move)(new_cube)
+            new_state = RubikState(new_cube, state.moves + [move])
+            yield new_state
+
+def a_star_search(initial_cube):
+    start_state = RubikState(initial_cube)
+    frontier = []
+    heapq.heappush(frontier, start_state)
     visited = set()
 
-    while open_set:
-        current_node = heapq.heappop(open_set)
-        if current_node.h == 0:  # Chequear si es el estado objetivo
-            return reconstruct_path(current_node)
+    while frontier:
+        current_state = heapq.heappop(frontier)
+        state_config = tuple(tuple(row) for face in current_state.cube.faces.values() for row in face)
 
-        visited.add(current_node.cube)
+        if current_state.heuristic() == 0:
+            return current_state.moves
 
-        for move in [RubikMoves.U, RubikMoves.U_prime, RubikMoves.F, RubikMoves.F_prime, RubikMoves.L, RubikMoves.L_prime, RubikMoves.R, RubikMoves.R_prime, RubikMoves.B, RubikMoves.B_prime, RubikMoves.D, RubikMoves.D_prime]:
-            new_cube = current_node.cube.copy()
-            move(new_cube)
-            if new_cube in visited:
-                continue
-            new_node = Node(new_cube, current_node.g + 1, heuristic(new_cube), current_node, move.__name__)
-            heapq.heappush(open_set, new_node)
+        if state_config not in visited:
+            visited.add(state_config)
+            for next_state in generate_moves(current_state):
+                heapq.heappush(frontier, next_state)
 
-def reconstruct_path(node):
-    path = []
-    while node:
-        if node.move:
-            path.append(node.move)
-        node = node.parent
-    return path[::-1]  # Invertir para mostrar los pasos desde el inicio al final
+    return None
 
+# Ejecución del solucionador
 if __name__ == "__main__":
     cube = RubikCube()
-    cube.load_configuration("configuracion_cubo1.txt")
-    solution_path = a_star_solve(cube)
-    print("Pasos para resolver el cubo:", solution_path)
+    cube.load_configuration("configuracion_cubo3.txt")
+    solution_moves = a_star_search(cube)
+    print("No. Pasos:", len(solution_moves))
+    print("Pasos:", ' '.join(solution_moves))

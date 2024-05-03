@@ -2,18 +2,22 @@
 #   U_prime - Giro de la cara superior en sentido anti-horario.
 #   F - Giro de la cara frontal en sentido horario.
 #   F_prime - Giro de la cara frontal en sentido anti-horario.
-#   L - Giro de la cara izquierda en sentido horario.
+#   L - Giro de la cara izquierda en sentido horario.(x)
 #   L_prime - Giro de la cara izquierda en sentido anti-horario.
-#   R - Giro de la cara derecha en sentido horario.
+#   R - Giro de la cara derecha en sentido horario.(x)
 #   R_prime - Giro de la cara derecha en sentido anti-horario.
 #   B - Giro de la cara trasera en sentido horario.
 #   B_prime - Giro de la cara trasera en sentido anti-horario.
-#   D - Giro de la cara inferior en sentido horario.
+#   D - Giro de la cara inferior en sentido horario. (x)
 #   D_prime - Giro de la cara inferior en sentido anti-horario.
 
 #SE HIZO CORRECION PARA LOS MOVIMIENTOS U y U', F y F', L y L', R y R', B y B'.
 
 class RubikMoves:
+    @staticmethod
+    def get_all_moves():
+        return ['U', 'U_prime', 'F', 'F_prime', 'L', 'L_prime', 'R', 'R_prime', 'B', 'B_prime', 'D', 'D_prime']
+
     @staticmethod
     def rotate_face_clockwise(face):
         """
@@ -108,7 +112,7 @@ class RubikMoves:
         for i in range(3):
             cube.faces['Y'][i][0] = cube.faces['G'][i][0]  # Corregido: De 'G' a 'Y'.
         for i in range(3):
-            cube.faces['G'][i][0] = left_column[i-3]  # Corregido: De 'W' a 'G'.
+            cube.faces['G'][i][0] = left_column[i-3]  # Corregido: De 'W' a 'G'. con i-3
 
     @staticmethod
     def L_prime(cube): #MOVIMIENTO CORRECTO
@@ -177,7 +181,7 @@ class RubikMoves:
             cube.faces['O'][i][0] = top_row_B[2-i]
 
     @staticmethod
-    def B_prime(cube): 
+    def B_prime(cube): #MOVIMIENTO CORRECTO
         """
         Rotate the back face counterclockwise.
         """
@@ -192,7 +196,7 @@ class RubikMoves:
 #SE HIZO CORRECION PARA LOS MOVIMIENTOS U y U', F y F', L y L', R y R', B y B'.
 
     @staticmethod
-    def D(cube):
+    def D(cube): #MOVIMIENTO CORRECTO
         """
         Rotate the down face clockwise.
         """
@@ -204,7 +208,7 @@ class RubikMoves:
         cube.faces['O'][2] = bottom_row
 
     @staticmethod
-    def D_prime(cube):
+    def D_prime(cube): #MOVIMIENTO CORRECTO
         """
         Rotate the down face counterclockwise.
         """

@@ -15,7 +15,7 @@ class RubikCube:
         with open(file_path, 'r') as file:
             lines = file.readlines()
             if len(lines) != 18:
-                raise ValueError("Invalid cube configuration: incorrect number of lines.")
+                raise ValueError("Configuración invalida del cubo  vo numero incorrecto de lineas!!!")
             for i, line in enumerate(lines):
                 if 1 <= i <= 3:
                     face_color = 'W'
@@ -42,46 +42,15 @@ class RubikCube:
                     self.faces[face_color] = [face[:3], face[3:6], face[6:]]
 
     def is_valid_configuration(self):
-        # Verifying correct count of each color
         for color in self.colors:
             if sum(row.count(color) for face in self.faces.values() for row in face) != 9:
                 return f"Error: Hay más o menos de 9 cuadraditos de color {color}"
-
-        # Verifying center pieces
         counts = {color: 0 for color in self.colors}
         for face in self.faces.values():
             counts[face[1][1]] += 1
         if any(count != 1 for count in counts.values()):
             return "Error: Hay más de un centro de un color"
-
-        # Validar esquinas 
-        #valid_corners = [
-        #    {'W', 'R', 'O'}, {'W', 'R', 'Y'}, {'W', 'O', 'G'}, {'W', 'Y', 'G'},
-        #    {'Y', 'R', 'B'}, {'Y', 'G', 'O'}, {'Y', 'B', 'O'}, {'Y', 'O', 'R'},
-        #    {'O', 'R', 'G'}, {'O', 'B', 'Y'}, {'O', 'G', 'W'}, {'O', 'Y', 'B'},
-        #    {'G', 'R', 'W'}, {'G', 'B', 'Y'}, {'G', 'W', 'O'}, {'G', 'Y', 'B'},
-        #    {'R', 'R', 'B'}, {'R', 'W', 'G'}, {'R', 'Y', 'Y'}, {'R', 'B', 'W'},
-        #    {'B', 'O', 'Y'}, {'B', 'R', 'R'}, {'B', 'G', 'W'}, {'B', 'Y', 'O'}
-        #]
-
-        #corners = [
-        #    [self.faces['W'][0][0], self.faces['G'][0][0], self.faces['O'][0][0]],
-        #    [self.faces['W'][0][2], self.faces['G'][0][2], self.faces['R'][0][0]],
-        #    [self.faces['W'][2][0], self.faces['O'][2][0], self.faces['B'][0][0]],
-        #    [self.faces['W'][2][2], self.faces['R'][2][0], self.faces['B'][0][2]],
-        #    [self.faces['Y'][0][0], self.faces['O'][2][2], self.faces['G'][2][0]],
-        #    [self.faces['Y'][0][2], self.faces['R'][2][2], self.faces['G'][2][2]],
-        #    [self.faces['Y'][2][0], self.faces['B'][2][0], self.faces['O'][2][2]],
-        #    [self.faces['Y'][2][2], self.faces['B'][2][2], self.faces['R'][2][2]]
-        #]
-
-        #for corner in corners:
-        #    corner_set = set(corner)
-        #    if corner_set not in valid_corners:
-        #        return f"Error: Las esquinas no tienen colores adyacentes correctos {corner_set}"
-
         return True
-
 
     def print_cube(self):
         for row in range(3):
@@ -130,4 +99,3 @@ if __name__ == "__main__":
             print(result)
     except ValueError as e:
         print("Error:", e)
-#Codificación (7 puntos)
